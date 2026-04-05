@@ -29,7 +29,29 @@ data class NavAnimation(
                 enterTransition = fadeIn(animationSpec = tween(duration)),
                 exitTransition = fadeOut(animationSpec = tween(duration)),
             )
-        }        fun slideUp(duration: Int = DEFAULT_DURATION): NavAnimation {
+        }
+
+        fun slideLeft(duration: Int = DEFAULT_DURATION): NavAnimation {
+            return NavAnimation(
+                enterTransition = slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(duration),
+                ),
+                exitTransition = slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(duration),
+                ),
+                popEnterTransition = slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(duration),
+                ),
+                popExitTransition = slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(duration),
+                ),
+            )
+        }
+        fun slideUp(duration: Int = DEFAULT_DURATION): NavAnimation {
             return NavAnimation(
                 enterTransition = slideInVertically(
                     initialOffsetY = { it },
