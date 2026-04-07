@@ -86,5 +86,15 @@ data class NavAnimation(
                     animationSpec = tween(duration),
                 ),
             )
-        }    }
+        }
+
+        fun scale(duration: Int = DEFAULT_DURATION): NavAnimation {
+            return NavAnimation(
+                enterTransition = scaleIn(animationSpec = tween(duration)) +
+                    fadeIn(animationSpec = tween(duration)),
+                exitTransition = scaleOut(animationSpec = tween(duration)) +
+                    fadeOut(animationSpec = tween(duration)),
+            )
+        }
+    }
 }
