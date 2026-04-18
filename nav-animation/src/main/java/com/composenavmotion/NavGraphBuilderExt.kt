@@ -10,7 +10,7 @@ import androidx.navigation.compose.composable
 
 fun NavGraphBuilder.animatedComposable(
     route: String,
-    animation: NavAnimation = NavAnimation.fade(),
+    animation: NavAnimationSpec = NavAnimation.fade(),
     arguments: List<NamedNavArgument> = emptyList(),
     deepLinks: List<NavDeepLink> = emptyList(),
     content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit,

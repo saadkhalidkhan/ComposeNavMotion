@@ -2,7 +2,8 @@ package com.composenavmotion
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.Easing
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -12,89 +13,47 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 
-/**
- * Navigation transition presets for Jetpack Compose destinations.
- */
-data class NavAnimation(
-    val enterTransition: EnterTransition,
-    val exitTransition: ExitTransition,
-    val popEnterTransition: EnterTransition = enterTransition,
-    val popExitTransition: ExitTransition = exitTransition,
-) {
-    companion object {
-        private const val DEFAULT_DURATION = 300
-
-        fun fade(duration: Int = DEFAULT_DURATION): NavAnimation {
-            return NavAnimation(
-                enterTransition = fadeIn(animationSpec = tween(duration)),
-                exitTransition = fadeOut(animationSpec = tween(duration)),
-            )
-        }
-
-        fun slideLeft(duration: Int = DEFAULT_DURATION): NavAnimation {
-            return NavAnimation(
-                enterTransition = slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(duration),
-                ),
-                exitTransition = slideOutHorizontally(
-                    targetOffsetX = { -it },
-                    animationSpec = tween(duration),
-                ),
-                popEnterTransition = slideInHorizontally(
-                    initialOffsetX = { -it },
-                    animationSpec = tween(duration),
-                ),
-                popExitTransition = slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(duration),
-                ),
-            )
-        }
-
-        fun slideRight(duration: Int = DEFAULT_DURATION): NavAnimation {
-            return NavAnimation(
-                enterTransition = slideInHorizontally(
-                    initialOffsetX = { -it },
-                    animationSpec = tween(duration),
-                ),
-                exitTransition = slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(duration),
-                ),
-                popEnterTransition = slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(duration),
-                ),
-                popExitTransition = slideOutHorizontally(
-                    targetOffsetX = { -it },
-                    animationSpec = tween(duration),
-                ),
-            )
-        }
-
-        fun slideUp(duration: Int = DEFAULT_DURATION): NavAnimation {
-            return NavAnimation(
-                enterTransition = slideInVertically(
-                    initialOffsetY = { it },
-                    animationSpec = tween(duration),
-                ),
-                exitTransition = fadeOut(animationSpec = tween(duration)),
-                popEnterTransition = fadeIn(animationSpec = tween(duration)),
-                popExitTransition = slideOutVertically(
-                    targetOffsetY = { it },
-                    animationSpec = tween(duration),
-                ),
-            )
-        }
-
-        fun scale(duration: Int = DEFAULT_DURATION): NavAnimation {
-            return NavAnimation(
-                enterTransition = scaleIn(animationSpec = tween(duration)) +
-                    fadeIn(animationSpec = tween(duration)),
-                exitTransition = scaleOut(animationSpec = tween(duration)) +
-                    fadeOut(animationSpec = tween(duration)),
-            )
-        }
+object NavAnimation {
+    fun fade(duration: Int = AnimationConfig.DEFAULT_DURATION, easing: Easing = FastOutSlowInEasing) = custom(
+        enter = { fadeIn(animationSpec = tweenSpec()) },
+        exit = { fadeOut(animationSpec = tweenSpec()) },
+        duration = duration, easing = easing,
+    )
+    fun slideLeft(duration: Int = AnimationConfig.DEFAULT_DURATION, easing: Easing = FastOutSlowInEasing) = custom(
+        enter = { slideInHorizontally(initialOffsetX = { it }, animationSpec = tweenSpec()) },
+        exit = { slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tweenSpec()) },
+        popEnter = { slideInHorizontally(initialOffsetX = { -it }, animationSpec = tweenSpec()) },
+        popExit = { slideOutHorizontally(targetOffsetX = { it }, animationSpec = tweenSpec()) },
+        duration = duration, easing = easing,
+    )
+    fun slideRight(duration: Int = AnimationConfig.DEFAULT_DURATION, easing: Easing = FastOutSlowInEasing) = custom(
+        enter = { slideInHorizontally(initialOffsetX = { -it }, animationSpec = tweenSpec()) },
+        exit = { slideOutHorizontally(targetOffsetX = { it }, animationSpec = tweenSpec()) },
+        popEnter = { slideInHorizontally(initialOffsetX = { it }, animationSpec = tweenSpec()) },
+        popExit = { slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tweenSpec()) },
+        duration = duration, easing = easing,
+    )
+    fun slideUp(duration: Int = AnimationConfig.DEFAULT_DURATION, easing: Easing = FastOutSlowInEasing) = custom(
+        enter = { slideInVertically(initialOffsetY = { it }, animationSpec = tweenSpec()) },
+        exit = { fadeOut(animationSpec = tweenSpec()) },
+        popEnter = { fadeIn(animationSpec = tweenSpec()) },
+        popExit = { slideOutVertically(targetOffsetY = { it }, animationSpec = tweenSpec()) },
+        duration = duration, easing = easing,
+    )
+    fun scale(duration: Int = AnimationConfig.DEFAULT_DURATION, easing: Easing = FastOutSlowInEasing) = custom(
+        enter = { scaleIn(animationSpec = tweenSpec()) + fadeIn(animationSpec = tweenSpec()) },
+        exit = { scaleOut(animationSpec = tweenSpec()) + fadeOut(animationSpec = tweenSpec()) },
+        duration = duration, easing = easing,
+    )
+    fun custom(
+        enter: AnimationConfig.() -> EnterTransition,
+        exit: AnimationConfig.() -> ExitTransition,
+        popEnter: AnimationConfig.() -> EnterTransition = enter,
+        popExit: AnimationConfig.() -> ExitTransition = exit,
+        duration: Int = AnimationConfig.DEFAULT_DURATION,
+        easing: Easing = FastOutSlowInEasing,
+    ): NavAnimationSpec {
+        val config = AnimationConfig(duration, easing)
+        return NavAnimationSpec(config.enter(), config.exit(), config.popEnter(), config.popExit(), config)
     }
 }
