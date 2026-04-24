@@ -4,22 +4,25 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.composenavmotion.NavAnimation
 import com.composenavmotion.animatedComposable
+import com.example.composenavmotion.ui.detail.DetailScreen
+import com.example.composenavmotion.ui.home.HomeScreen
+import com.example.composenavmotion.ui.profile.ProfileScreen
+import com.example.composenavmotion.ui.sheet.SheetScreen
 import com.example.composenavmotion.ui.theme.ComposeNavMotionTheme
 
 class MainActivity : ComponentActivity() {
@@ -29,49 +32,57 @@ class MainActivity : ComponentActivity() {
         setContent {
             ComposeNavMotionTheme {
                 val navController = rememberNavController()
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold { innerPadding ->
                     NavHost(
                         navController = navController,
                         startDestination = "home",
                         modifier = Modifier.padding(innerPadding),
                     ) {
                         animatedComposable(route = "home", animation = NavAnimation.fade()) {
-                            HomeScreen(onNavigateToDetails = { navController.navigate("details") })
+                            HomeScreen(
+                                onOpenDetail = { item ->
+                                    navController.navigate("details/${item.id}")
+                                },
+                                onOpenSheet = { navController.navigate("sheet") },
+                                onOpenProfile = { navController.navigate("profile") },
+                            )
                         }
-                        animatedComposable(route = "details", animation = NavAnimation.slideLeft()) {
-                            DetailsScreen(onBack = { navController.popBackStack() })
+                        animatedComposable(
+                            route = "details/{itemId}",
+                            animation = NavAnimation.slideLeft(),
+                            arguments = listOf(
+                                navArgument("itemId") { type = NavType.StringType },
+                            ),
+                        ) { entry ->
+                            DetailScreen(
+                                itemId = entry.arguments?.getString("itemId").orEmpty(),
+                                onBack = { navController.popBackStack() },
+                            )
+                        }
+                        animatedComposable(
+                            route = "profile",
+                            animation = NavAnimation.custom(
+                                enter = { slideInHorizontally(animationSpec = tweenSpec()) },
+                                exit = { slideOutHorizontally(animationSpec = tweenSpec()) },
+                            ),
+                        ) {
+                            ProfileScreen(onBack = { navController.popBackStack() })
+                        }
+                        animatedComposable(
+                            route = "sheet",
+                            animation = NavAnimation.custom(
+                                enter = { slideInVertically(animationSpec = tweenSpec()) },
+                                exit = { fadeOut(animationSpec = tweenSpec()) },
+                                popEnter = { fadeIn(animationSpec = tweenSpec()) },
+                                popExit = { slideOutVertically(animationSpec = tweenSpec()) },
+                                duration = 350,
+                            ),
+                        ) {
+                            SheetScreen(onBack = { navController.popBackStack() })
                         }
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun HomeScreen(onNavigateToDetails: () -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(text = "Home Screen", style = MaterialTheme.typography.headlineMedium)
-        Button(onClick = onNavigateToDetails, modifier = Modifier.padding(top = 16.dp)) {
-            Text(text = "Go to Details")
-        }
-    }
-}
-
-@Composable
-fun DetailsScreen(onBack: () -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(text = "Details Screen", style = MaterialTheme.typography.headlineMedium)
-        Button(onClick = onBack, modifier = Modifier.padding(top = 16.dp)) {
-            Text(text = "Go Back")
         }
     }
 }
