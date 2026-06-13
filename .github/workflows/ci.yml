@@ -15,4 +15,9 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-      - run: ./gradlew :nav-animation:testDebugUnitTest :app:assembleDebug --stacktrace
+      - name: Grant execute permission for Gradle wrapper
+        run: chmod +x gradlew
+      - name: Run unit tests
+        run: ./gradlew :nav-animation:testDebugUnitTest --stacktrace
+      - name: Assemble sample app
+        run: ./gradlew :app:assembleDebug --stacktrace
