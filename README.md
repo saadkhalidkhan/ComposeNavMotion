@@ -4,10 +4,13 @@
 
 **Report a bug** · **Contributing** · **License**
 
+![ComposeNavMotion demo](docs/images/demo_nav_motion.gif)
+
 ---
 
 ## Table of contents
 
+* Preview
 * Features
 * Installation
 * Quick start
@@ -29,6 +32,17 @@
 | **Simple API** | One extension: `animatedComposable()` |
 | **Defaults** | 300 ms duration, `FastOutSlowInEasing` |
 | **Testable** | Pure Kotlin specs with unit tests |
+
+---
+
+## Preview
+
+The sample app demo above shows:
+
+- Home list navigation with profile entry
+- Detail screen transitions using `slideLeft`
+- Profile screen with custom horizontal slide
+- Sheet screen with mixed slide-up and fade animations
 
 ---
 
@@ -158,25 +172,3 @@ Copyright 2026 Saad Khan
 **Saad Khan** — [GitHub](https://github.com/saadkhalidkhan) · ranasaad0799@gmail.com
 
 If this library helps you, consider starring the repo.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
