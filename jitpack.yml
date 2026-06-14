@@ -1,0 +1,6 @@
+jdk:
+  - openjdk17
+before_install:
+  - chmod +x ./gradlew
+install:
+  - ./gradlew :nav-animation:assembleRelease :nav-animation:publishMavenPublicationToMavenLocal --no-daemon -x test -Psigning.required=false

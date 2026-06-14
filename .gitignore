@@ -8,3 +8,6 @@
 local.properties
 **/build/
 /scripts/
+signing.properties
+central.properties
+release.properties

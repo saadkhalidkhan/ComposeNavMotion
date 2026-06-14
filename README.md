@@ -48,6 +48,46 @@ The sample app demo above shows:
 
 ## Installation
 
+### Maven Central
+
+```kotlin
+// settings.gradle.kts
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+```
+
+```kotlin
+// build.gradle.kts
+dependencies {
+    implementation("io.github.saadkhalidkhan:composenavmotion:1.0.0")
+}
+```
+
+### JitPack
+
+```kotlin
+// settings.gradle.kts
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url = uri("https://jitpack.io") }
+    }
+}
+```
+
+```kotlin
+dependencies {
+    implementation("com.github.saadkhalidkhan:ComposeNavMotion:1.0.0")
+}
+```
+
+See [PUBLISHING.md](PUBLISHING.md) for release steps and CI setup.
+
 ### Local module (development)
 
 ```kotlin
@@ -59,8 +99,6 @@ dependencies {
     implementation(project(":nav-animation"))
 }
 ```
-
-Maven Central and JitPack publishing will be documented in a future release.
 
 ---
 
