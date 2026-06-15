@@ -8,6 +8,12 @@ import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 
+/**
+ * Registers a composable destination with enter, exit, and pop transitions from [animation].
+ *
+ * Pop transitions power back navigation. Pair with [NavAnimation.directionAware] so forward
+ * pushes and backward pops use different visual directions.
+ */
 fun NavGraphBuilder.animatedComposable(
     route: String,
     animation: NavAnimationSpec = NavAnimation.fade(),
