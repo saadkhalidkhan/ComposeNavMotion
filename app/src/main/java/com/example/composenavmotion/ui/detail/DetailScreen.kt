@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -20,6 +21,7 @@ import com.example.composenavmotion.ui.home.sampleHomeItems
 fun DetailScreen(
     itemId: String,
     onBack: () -> Unit,
+    onContinueToCheckout: (() -> Unit)? = null,
 ) {
     val item = sampleHomeItems.firstOrNull { it.id == itemId }
     val title = item?.title ?: "Details"
@@ -44,10 +46,22 @@ fun DetailScreen(
                 modifier = Modifier.padding(top = 12.dp),
             )
             Text(
-                text = "Opened with slideLeft preset",
+                text = if (onContinueToCheckout != null) {
+                    "Forward navigation uses slideLeft"
+                } else {
+                    "Opened with slideLeft preset"
+                },
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(top = 8.dp),
             )
+            onContinueToCheckout?.let { onContinue ->
+                Button(
+                    onClick = onContinue,
+                    modifier = Modifier.padding(top = 24.dp),
+                ) {
+                    Text("Continue to Checkout")
+                }
+            }
         }
     }
 }
