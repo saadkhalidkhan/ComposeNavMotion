@@ -19,6 +19,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.composenavmotion.NavAnimation
 import com.composenavmotion.animatedComposable
+import com.example.composenavmotion.ui.checkout.CheckoutScreen
 import com.example.composenavmotion.ui.detail.DetailScreen
 import com.example.composenavmotion.ui.home.HomeScreen
 import com.example.composenavmotion.ui.profile.ProfileScreen
@@ -32,20 +33,41 @@ class MainActivity : ComponentActivity() {
         setContent {
             ComposeNavMotionTheme {
                 val navController = rememberNavController()
+                val directionAwareAnimation = NavAnimation.directionAware(
+                    forward = NavAnimation.slideLeft(),
+                    backward = NavAnimation.slideRight(),
+                )
                 Scaffold { innerPadding ->
                     NavHost(
                         navController = navController,
                         startDestination = "home",
                         modifier = Modifier.padding(innerPadding),
                     ) {
-                        animatedComposable(route = "home", animation = NavAnimation.fade()) {
+                        animatedComposable(route = "home", animation = directionAwareAnimation) {
                             HomeScreen(
                                 onOpenDetail = { item ->
                                     navController.navigate("details/${item.id}")
                                 },
                                 onOpenSheet = { navController.navigate("sheet") },
                                 onOpenProfile = { navController.navigate("profile") },
+                                onOpenCheckoutFlow = { navController.navigate("checkout-details") },
                             )
+                        }
+                        animatedComposable(
+                            route = "checkout-details",
+                            animation = directionAwareAnimation,
+                        ) {
+                            DetailScreen(
+                                itemId = "checkout-flow",
+                                onBack = { navController.popBackStack() },
+                                onContinueToCheckout = { navController.navigate("checkout") },
+                            )
+                        }
+                        animatedComposable(
+                            route = "checkout",
+                            animation = directionAwareAnimation,
+                        ) {
+                            CheckoutScreen(onBack = { navController.popBackStack() })
                         }
                         animatedComposable(
                             route = "details/{itemId}",

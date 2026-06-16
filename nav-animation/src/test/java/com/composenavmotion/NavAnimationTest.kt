@@ -8,6 +8,14 @@ import org.junit.Assert.assertNotNull
 import org.junit.Test
 
 class NavAnimationTest {
+    @Test fun directionAware_slidePreset_mapsForwardAndBackward() {
+        val spec = NavAnimation.directionAware(
+            forward = NavAnimation.slideLeft(),
+            backward = NavAnimation.slideRight(),
+        )
+        assertNotNull(spec.popExitTransition)
+    }
+
     @Test fun custom_mixedAnimation_buildsSpec() {
         val spec = NavAnimation.custom(
             enter = { slideInVertically(animationSpec = tweenSpec()) },

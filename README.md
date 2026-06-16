@@ -16,6 +16,7 @@
 * Quick start
 * Preset animations
 * Custom animations
+* Direction-aware navigation
 * Sample app
 * Project structure
 * Contributing
@@ -28,6 +29,7 @@
 | --- | --- |
 | **Preset transitions** | `fade`, `slideLeft`, `slideRight`, `slideUp`, `scale` |
 | **Custom builder** | Compose transitions with shared duration and easing |
+| **Direction-aware** | `directionAware()` maps forward push and backward pop animations |
 | **Pop support** | Matching back-stack enter/exit animations |
 | **Simple API** | One extension: `animatedComposable()` |
 | **Defaults** | 300 ms duration, `FastOutSlowInEasing` |
@@ -41,6 +43,7 @@ The sample app demo above shows:
 
 - Home list navigation with profile entry
 - Detail screen transitions using `slideLeft`
+- Direction-aware Home → Details → Checkout flow (`slideLeft` forward, `slideRight` back)
 - Profile screen with custom horizontal slide
 - Sheet screen with mixed slide-up and fade animations
 
@@ -170,13 +173,47 @@ NavAnimation.custom(
 
 ---
 
+## Direction-aware navigation
+
+Use separate forward and backward specs. Compose Navigation applies `enter`/`exit` on push and `popEnter`/`popExit` on back — no stack-depth tracking required.
+
+```kotlin
+val navAnimation = NavAnimation.directionAware(
+    forward = NavAnimation.slideLeft(),
+    backward = NavAnimation.slideRight(),
+)
+
+NavHost(navController, startDestination = "home") {
+    animatedComposable(route = "home", animation = navAnimation) { HomeScreen() }
+    animatedComposable(route = "details", animation = navAnimation) { DetailsScreen() }
+    animatedComposable(route = "checkout", animation = navAnimation) { CheckoutScreen() }
+}
+```
+
+Works with presets and `NavAnimation.custom()`:
+
+```kotlin
+NavAnimation.directionAware(
+    forward = NavAnimation.custom(
+        enter = { fadeIn(animationSpec = tweenSpec()) },
+        exit = { fadeOut(animationSpec = tweenSpec()) },
+    ),
+    backward = NavAnimation.custom(
+        enter = { slideInHorizontally(animationSpec = tweenSpec()) },
+        exit = { slideOutHorizontally(animationSpec = tweenSpec()) },
+    ),
+)
+```
+
+---
+
 ## Sample app
 
 ```bash
 ./gradlew :app:installDebug
 ```
 
-Demonstrates preset `slideLeft`, a custom horizontal profile screen, and a mixed slide-up / fade sheet screen.
+Demonstrates preset `slideLeft`, direction-aware checkout flow, a custom horizontal profile screen, and a mixed slide-up / fade sheet screen.
 
 ---
 

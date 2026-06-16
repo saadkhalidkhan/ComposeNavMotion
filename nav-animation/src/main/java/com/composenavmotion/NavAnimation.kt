@@ -56,4 +56,29 @@ object NavAnimation {
         val config = AnimationConfig(duration, easing)
         return NavAnimationSpec(config.enter(), config.exit(), config.popEnter(), config.popExit(), config)
     }
+
+    /**
+     * Combines separate forward and backward [NavAnimationSpec] instances for direction-aware navigation.
+     *
+     * Forward navigation (push) uses [forward] enter and exit transitions.
+     * Back navigation (pop) uses [backward] enter and exit transitions as pop enter and pop exit.
+     *
+     * Example:
+     * ```
+     * val animation = NavAnimation.directionAware(
+     *     forward = NavAnimation.slideLeft(),
+     *     backward = NavAnimation.slideRight(),
+     * )
+     * ```
+     */
+    fun directionAware(
+        forward: NavAnimationSpec,
+        backward: NavAnimationSpec,
+    ): NavAnimationSpec = NavAnimationSpec(
+        enterTransition = forward.enterTransition,
+        exitTransition = forward.exitTransition,
+        popEnterTransition = backward.enterTransition,
+        popExitTransition = backward.exitTransition,
+        config = forward.config,
+    )
 }
