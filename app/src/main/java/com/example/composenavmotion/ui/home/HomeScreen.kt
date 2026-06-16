@@ -26,6 +26,7 @@ fun HomeScreen(
     onOpenDetail: (HomeItem) -> Unit,
     onOpenSheet: () -> Unit,
     onOpenProfile: () -> Unit,
+    onOpenCheckoutFlow: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -53,10 +54,10 @@ fun HomeScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            if (item.opensSheet) {
-                                onOpenSheet()
-                            } else {
-                                onOpenDetail(item)
+                            when {
+                                item.opensSheet -> onOpenSheet()
+                                item.opensCheckoutFlow -> onOpenCheckoutFlow()
+                                else -> onOpenDetail(item)
                             }
                         },
                     headlineContent = { Text(item.title) },
