@@ -2,7 +2,7 @@
 
 **ComposeNavMotion** is a lightweight, plug-and-play animation preset library for **Jetpack Compose Navigation**. Built with Compose Animation and Navigation Compose — add polished screen transitions in minutes, or compose fully custom animations with shared duration and easing.
 
-**Report a bug** · **Contributing** · **License**
+**[Report a bug](https://github.com/saadkhalidkhan/ComposeNavMotion/issues)** · **[Contributing](CONTRIBUTING.md)** · **[License](LICENSE)**
 
 ![ComposeNavMotion demo](docs/images/demo_nav_motion.gif)
 
@@ -213,7 +213,7 @@ NavAnimation.directionAware(
 ./gradlew :app:installDebug
 ```
 
-Demonstrates preset `slideLeft`, direction-aware checkout flow, a custom horizontal profile screen, and a mixed slide-up / fade sheet screen.
+Demonstrates preset transitions, direction-aware checkout flow, a custom profile screen, and a mixed slide-up / fade sheet screen. Open **Direction-aware checkout** on the home list to try forward and back navigation.
 
 ---
 
