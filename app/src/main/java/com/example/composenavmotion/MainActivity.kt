@@ -19,10 +19,13 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.composenavmotion.NavAnimation
 import com.composenavmotion.animatedComposable
+import com.composenavmotion.material.MaterialNavMotion
 import com.example.composenavmotion.ui.checkout.CheckoutScreen
 import com.example.composenavmotion.ui.detail.DetailScreen
 import com.example.composenavmotion.ui.home.HomeScreen
+import com.example.composenavmotion.ui.modal.ModalScreen
 import com.example.composenavmotion.ui.profile.ProfileScreen
+import com.example.composenavmotion.ui.settings.SettingsScreen
 import com.example.composenavmotion.ui.sheet.SheetScreen
 import com.example.composenavmotion.ui.theme.ComposeNavMotionTheme
 
@@ -51,6 +54,7 @@ class MainActivity : ComponentActivity() {
                                 onOpenSheet = { navController.navigate("sheet") },
                                 onOpenProfile = { navController.navigate("profile") },
                                 onOpenCheckoutFlow = { navController.navigate("checkout-details") },
+                                onOpenMaterialRoute = { route -> navController.navigate(route) },
                             )
                         }
                         animatedComposable(
@@ -101,6 +105,48 @@ class MainActivity : ComponentActivity() {
                             ),
                         ) {
                             SheetScreen(onBack = { navController.popBackStack() })
+                        }
+                        animatedComposable(
+                            route = "material/details",
+                            animation = MaterialNavMotion.sharedAxisX(),
+                        ) {
+                            DetailScreen(
+                                itemId = "material-shared-axis-x",
+                                onBack = { navController.popBackStack() },
+                                animationDescription = "MaterialNavMotion.sharedAxisX() — horizontal slide with fade",
+                            )
+                        }
+                        animatedComposable(
+                            route = "material/settings",
+                            animation = MaterialNavMotion.sharedAxisY(),
+                        ) {
+                            SettingsScreen(onBack = { navController.popBackStack() })
+                        }
+                        animatedComposable(
+                            route = "material/fade-through",
+                            animation = MaterialNavMotion.fadeThrough(),
+                        ) {
+                            DetailScreen(
+                                itemId = "material-fade-through",
+                                onBack = { navController.popBackStack() },
+                                animationDescription = "MaterialNavMotion.fadeThrough() — staggered fade with subtle scale",
+                            )
+                        }
+                        animatedComposable(
+                            route = "material/container-transform",
+                            animation = MaterialNavMotion.containerTransform(),
+                        ) {
+                            DetailScreen(
+                                itemId = "material-container-transform",
+                                onBack = { navController.popBackStack() },
+                                animationDescription = "MaterialNavMotion.containerTransform() — container transform style (scale + fade)",
+                            )
+                        }
+                        animatedComposable(
+                            route = "material/modal",
+                            animation = MaterialNavMotion.modal(),
+                        ) {
+                            ModalScreen(onBack = { navController.popBackStack() })
                         }
                     }
                 }

@@ -6,6 +6,7 @@ data class HomeItem(
     val subtitle: String,
     val opensSheet: Boolean = false,
     val opensCheckoutFlow: Boolean = false,
+    val materialRoute: String? = null,
 )
 
 val sampleHomeItems = listOf(
@@ -20,4 +21,34 @@ val sampleHomeItems = listOf(
         opensCheckoutFlow = true,
     ),
     HomeItem("sheet", "Sheet transition", "Custom slide up with fade", opensSheet = true),
+    HomeItem(
+        "material-shared-axis-x",
+        "Material: Shared Axis X",
+        "MaterialNavMotion.sharedAxisX()",
+        materialRoute = "material/details",
+    ),
+    HomeItem(
+        "material-shared-axis-y",
+        "Material: Shared Axis Y",
+        "MaterialNavMotion.sharedAxisY()",
+        materialRoute = "material/settings",
+    ),
+    HomeItem(
+        "material-fade-through",
+        "Material: Fade Through",
+        "MaterialNavMotion.fadeThrough()",
+        materialRoute = "material/fade-through",
+    ),
+    HomeItem(
+        "material-container-transform",
+        "Material: Container Transform Style",
+        "MaterialNavMotion.containerTransform()",
+        materialRoute = "material/container-transform",
+    ),
+    HomeItem(
+        "material-modal",
+        "Material: Modal",
+        "MaterialNavMotion.modal()",
+        materialRoute = "material/modal",
+    ),
 )

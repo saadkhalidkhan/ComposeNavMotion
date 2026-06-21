@@ -22,6 +22,7 @@ fun DetailScreen(
     itemId: String,
     onBack: () -> Unit,
     onContinueToCheckout: (() -> Unit)? = null,
+    animationDescription: String? = null,
 ) {
     val item = sampleHomeItems.firstOrNull { it.id == itemId }
     val title = item?.title ?: "Details"
@@ -46,7 +47,7 @@ fun DetailScreen(
                 modifier = Modifier.padding(top = 12.dp),
             )
             Text(
-                text = if (onContinueToCheckout != null) {
+                text = animationDescription ?: if (onContinueToCheckout != null) {
                     "Forward navigation uses slideLeft"
                 } else {
                     "Opened with slideLeft preset"

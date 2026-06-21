@@ -27,6 +27,7 @@ fun HomeScreen(
     onOpenSheet: () -> Unit,
     onOpenProfile: () -> Unit,
     onOpenCheckoutFlow: () -> Unit,
+    onOpenMaterialRoute: (String) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -57,6 +58,7 @@ fun HomeScreen(
                             when {
                                 item.opensSheet -> onOpenSheet()
                                 item.opensCheckoutFlow -> onOpenCheckoutFlow()
+                                item.materialRoute != null -> onOpenMaterialRoute(item.materialRoute)
                                 else -> onOpenDetail(item)
                             }
                         },
