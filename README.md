@@ -17,6 +17,7 @@
 * Preset animations
 * Custom animations
 * Direction-aware navigation
+* Material motion presets
 * Sample app
 * Project structure
 * Contributing
@@ -30,6 +31,7 @@
 | **Preset transitions** | `fade`, `slideLeft`, `slideRight`, `slideUp`, `scale` |
 | **Custom builder** | Compose transitions with shared duration and easing |
 | **Direction-aware** | `directionAware()` maps forward push and backward pop animations |
+| **Material motion** | `MaterialNavMotion` presets: shared axis, fade through, container transform style, modal |
 | **Pop support** | Matching back-stack enter/exit animations |
 | **Simple API** | One extension: `animatedComposable()` |
 | **Defaults** | 300 ms duration, `FastOutSlowInEasing` |
@@ -46,6 +48,7 @@ The sample app demo above shows:
 - Direction-aware Home → Details → Checkout flow (`slideLeft` forward, `slideRight` back)
 - Profile screen with custom horizontal slide
 - Sheet screen with mixed slide-up and fade animations
+- Material motion presets: shared axis X/Y, fade through, container transform style, modal
 
 ---
 
@@ -207,13 +210,80 @@ NavAnimation.directionAware(
 
 ---
 
+## Material motion presets
+
+Production-quality navigation presets inspired by common Material motion patterns. Import from `com.composenavmotion.material.MaterialNavMotion`.
+
+```kotlin
+import com.composenavmotion.material.MaterialNavMotion
+import com.composenavmotion.animatedComposable
+
+NavHost(navController, startDestination = "home") {
+    animatedComposable(
+        route = "details",
+        animation = MaterialNavMotion.sharedAxisX(),
+    ) {
+        DetailsScreen()
+    }
+
+    animatedComposable(
+        route = "settings",
+        animation = MaterialNavMotion.sharedAxisY(),
+    ) {
+        SettingsScreen()
+    }
+
+    animatedComposable(
+        route = "search",
+        animation = MaterialNavMotion.fadeThrough(),
+    ) {
+        SearchScreen()
+    }
+
+    animatedComposable(
+        route = "album",
+        animation = MaterialNavMotion.containerTransform(),
+    ) {
+        AlbumScreen()
+    }
+
+    animatedComposable(
+        route = "modal",
+        animation = MaterialNavMotion.modal(),
+    ) {
+        ModalScreen()
+    }
+}
+```
+
+Each preset accepts optional `duration` (default 300 ms) and `easing` (default `FastOutSlowInEasing`):
+
+```kotlin
+MaterialNavMotion.sharedAxisX(
+    duration = 400,
+    easing = LinearOutSlowInEasing,
+)
+```
+
+| Preset | Use case | Forward behavior | Back behavior |
+| --- | --- | --- | --- |
+| `sharedAxisX()` | Lateral peer navigation | Slide in from right + fade in | Slide in from left + fade in |
+| `sharedAxisY()` | Vertical parent/child flows | Slide in from bottom + fade in | Slide in from top + fade in |
+| `fadeThrough()` | Unrelated destinations | Fade out quickly, fade in with delay + subtle scale | Same pattern |
+| `containerTransform()` | Detail expansion style | Scale up + fade in / scale down + fade out | Same pattern |
+| `modal()` | Bottom sheet / modal | Slide up from bottom + fade in | Slide down + fade out |
+
+> **Note:** `containerTransform()` is a simplified **container transform style** transition (scale + fade). It is not a true Material container transform, which typically requires shared element / shared bounds support.
+
+---
+
 ## Sample app
 
 ```bash
 ./gradlew :app:installDebug
 ```
 
-Demonstrates preset transitions, direction-aware checkout flow, a custom profile screen, and a mixed slide-up / fade sheet screen. Open **Direction-aware checkout** on the home list to try forward and back navigation.
+Demonstrates preset transitions, direction-aware checkout flow, a custom profile screen, a mixed slide-up / fade sheet screen, and all five Material motion presets. Open any **Material:** item on the home list to preview shared axis, fade through, container transform style, and modal transitions.
 
 ---
 
