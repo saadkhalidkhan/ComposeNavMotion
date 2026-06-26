@@ -23,5 +23,8 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "ComposeNavMotion"
-include(":app")
+include(":navmotion-core")
+include(":navmotion-material")
+include(":navmotion-shared")
 include(":nav-animation")
+include(":navmotion-sample")
