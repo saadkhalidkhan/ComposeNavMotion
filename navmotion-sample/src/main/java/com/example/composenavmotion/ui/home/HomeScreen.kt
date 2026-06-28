@@ -12,7 +12,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,12 +26,18 @@ fun HomeScreen(
     onOpenSheet: () -> Unit,
     onOpenProfile: () -> Unit,
     onOpenCheckoutFlow: () -> Unit,
+    onOpenList: () -> Unit,
+    onOpenAnimationSelector: () -> Unit,
+    onOpenSharedElements: () -> Unit,
+    onOpenNestedGraph: () -> Unit,
+    onOpenSettings: () -> Unit,
+    onOpenModal: () -> Unit,
     onOpenMaterialRoute: (String) -> Unit,
 ) {
     Scaffold(
         topBar = {
             SampleTopBar(
-                title = "Home",
+                title = "ComposeNavMotion",
                 navigationIcon = {
                     IconButton(onClick = onOpenProfile) {
                         Icon(
@@ -58,6 +63,12 @@ fun HomeScreen(
                             when {
                                 item.opensSheet -> onOpenSheet()
                                 item.opensCheckoutFlow -> onOpenCheckoutFlow()
+                                item.opensList -> onOpenList()
+                                item.opensAnimationSelector -> onOpenAnimationSelector()
+                                item.opensSharedElements -> onOpenSharedElements()
+                                item.opensNestedGraph -> onOpenNestedGraph()
+                                item.opensSettings -> onOpenSettings()
+                                item.opensModal -> onOpenModal()
                                 item.materialRoute != null -> onOpenMaterialRoute(item.materialRoute)
                                 else -> onOpenDetail(item)
                             }
