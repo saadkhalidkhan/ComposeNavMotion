@@ -10,7 +10,7 @@ val composeNavMotionArtifactId = providers.gradleProperty("COMPOSE_NAV_MOTION_AR
 val composeNavMotionVersion = providers.gradleProperty("COMPOSE_NAV_MOTION_VERSION_NAME").get()
 
 android {
-    namespace = "com.composenavmotion"
+    namespace = "com.composenavmotion.publish"
     compileSdk = 36
     defaultConfig {
         minSdk = 26
@@ -31,11 +31,9 @@ android {
 }
 
 dependencies {
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.animation)
-    implementation(libs.androidx.navigation.compose)
-    testImplementation(libs.junit)
+    api(project(":navmotion-core"))
+    api(project(":navmotion-material"))
+    api(project(":navmotion-shared"))
 }
 
 mavenPublishing {
@@ -53,8 +51,8 @@ mavenPublishing {
     pom {
         name.set("ComposeNavMotion")
         description.set(
-            "Lightweight animation preset library for Jetpack Compose Navigation with preset " +
-                "transitions, custom builders, and shared duration and easing.",
+            "Animated navigation library for Jetpack Compose with type-safe routes, Material motion " +
+                "presets, shared elements, and accessibility-aware configuration.",
         )
         inceptionYear.set("2026")
         url.set("https://github.com/saadkhalidkhan/ComposeNavMotion")
