@@ -10,6 +10,7 @@
 
 ## Table of contents
 
+* Preview
 * Features
 * Installation
 * Basic usage
@@ -40,6 +41,21 @@
 | **Nested graphs** | `animatedNavigation<T>` with graph-level animation |
 | **Accessibility** | Disable animations or respect system animator duration scale |
 | **Backward compatible** | MVP 1–4 string-route `NavAnimation` API still works |
+
+---
+
+## Preview
+
+The demo above (400×889) was recorded from `:navmotion-sample` and shows:
+
+- **Home hub** — presets, Material motion, and MVP 5 entry points
+- **List screen** — type-safe route navigation
+- **Details** — per-screen `containerTransform` override
+- **Animation selector** — switch global default animation at runtime
+- **Shared elements** — `SharedNavElement` profile avatar transitions
+- **Nested graph** — `animatedNavigation<MainGraph>` with graph-level animation
+- **Direction-aware checkout** — `slideLeft` forward / `slideRight` back
+- **Profile, Settings, Modal, Sheet** — custom and Material presets
 
 ---
 
