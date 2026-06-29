@@ -65,7 +65,7 @@ The demo above (400×889) was recorded from `:navmotion-sample` and shows:
 
 ```kotlin
 dependencies {
-    implementation("io.github.saadkhalidkhan:composenavmotion:1.0.0")
+    implementation("io.github.saadkhalidkhan:composenavmotion:1.1.0")
 }
 ```
 

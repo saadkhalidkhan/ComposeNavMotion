@@ -6,8 +6,8 @@ This guide covers **JitPack**, **Maven Central**, **GitHub Actions**, and verifi
 
 | Channel | Dependency |
 |---------|------------|
-| **Maven Central** | `io.github.saadkhalidkhan:composenavmotion:1.0.0` |
-| **JitPack** | `com.github.saadkhalidkhan:ComposeNavMotion:1.0.0` |
+| **Maven Central** | `io.github.saadkhalidkhan:composenavmotion:1.1.0` |
+| **JitPack** | `com.github.saadkhalidkhan:ComposeNavMotion:1.1.0` |
 
 For new versions: bump `COMPOSE_NAV_MOTION_VERSION_NAME` in `gradle.properties` and tag `vX.Y.Z`.
 
@@ -41,7 +41,7 @@ dependencyResolutionManagement {
 ```kotlin
 // build.gradle.kts
 dependencies {
-    implementation("io.github.saadkhalidkhan:composenavmotion:1.0.0")
+    implementation("io.github.saadkhalidkhan:composenavmotion:1.1.0")
 }
 ```
 
