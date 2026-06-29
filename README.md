@@ -1,6 +1,6 @@
 # ComposeNavMotion
 
-**ComposeNavMotion** is a lightweight, plug-and-play animation preset library for **Jetpack Compose Navigation**. Built with Compose Animation and Navigation Compose — add polished screen transitions in minutes, or compose fully custom animations with shared duration and easing.
+**ComposeNavMotion** is a reusable open-source library for **animated Jetpack Compose navigation**. It builds on Compose Animation and Navigation Compose with type-safe routes, global and per-screen animation control, Material motion presets, shared-element transitions, nested graphs, and accessibility-aware defaults.
 
 **[Report a bug](https://github.com/saadkhalidkhan/ComposeNavMotion/issues)** · **[Contributing](CONTRIBUTING.md)** · **[License](LICENSE)**
 
@@ -10,45 +10,36 @@
 
 ## Table of contents
 
-* Preview
 * Features
 * Installation
-* Quick start
-* Preset animations
-* Custom animations
-* Direction-aware navigation
+* Basic usage
+* Type-safe routes
+* Global default animation
+* Per-screen override
+* Nested graphs
 * Material motion presets
+* Shared elements
+* Accessibility
 * Sample app
 * Project structure
 * Contributing
 * License
-* Author
 
 ## Features
 
 | Feature | Description |
 | --- | --- |
-| **Preset transitions** | `fade`, `slideLeft`, `slideRight`, `slideUp`, `scale` |
+| **AnimatedNavHost** | Host-level default animation and accessibility config |
+| **Type-safe routes** | `@Serializable` routes with `animatedComposable<T>` |
+| **Animation resolution** | Per-screen → nested graph → global default → fade |
+| **Preset transitions** | `fade`, `slideLeft`, `slideRight`, `slideUp`, `scale`, `none` |
 | **Custom builder** | Compose transitions with shared duration and easing |
-| **Direction-aware** | `directionAware()` maps forward push and backward pop animations |
-| **Material motion** | `MaterialNavMotion` presets: shared axis, fade through, container transform style, modal |
-| **Pop support** | Matching back-stack enter/exit animations |
-| **Simple API** | One extension: `animatedComposable()` |
-| **Defaults** | 300 ms duration, `FastOutSlowInEasing` |
-| **Testable** | Pure Kotlin specs with unit tests |
-
----
-
-## Preview
-
-The sample app demo above shows:
-
-- Home list navigation with profile entry
-- Detail screen transitions using `slideLeft`
-- Direction-aware Home → Details → Checkout flow (`slideLeft` forward, `slideRight` back)
-- Profile screen with custom horizontal slide
-- Sheet screen with mixed slide-up and fade animations
-- Material motion presets: shared axis X/Y, fade through, container transform style, modal
+| **Direction-aware** | `directionAware()` for forward push / backward pop |
+| **Material motion** | `MaterialNavMotion` shared axis, fade through, container transform, modal |
+| **Shared elements** | `SharedNavElement` via Compose `SharedTransitionLayout` |
+| **Nested graphs** | `animatedNavigation<T>` with graph-level animation |
+| **Accessibility** | Disable animations or respect system animator duration scale |
+| **Backward compatible** | MVP 1–4 string-route `NavAnimation` API still works |
 
 ---
 
@@ -57,233 +48,239 @@ The sample app demo above shows:
 ### Maven Central
 
 ```kotlin
-// settings.gradle.kts
-dependencyResolutionManagement {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-```
-
-```kotlin
-// build.gradle.kts
 dependencies {
     implementation("io.github.saadkhalidkhan:composenavmotion:1.0.0")
 }
 ```
 
-### JitPack
+The published `:nav-animation` artifact re-exports `:navmotion-core`, `:navmotion-material`, and `:navmotion-shared`.
+
+### Modular dependencies (development)
 
 ```kotlin
-// settings.gradle.kts
-dependencyResolutionManagement {
-    repositories {
-        google()
-        mavenCentral()
-        maven { url = uri("https://jitpack.io") }
-    }
-}
+implementation(project(":navmotion-core"))
+implementation(project(":navmotion-material"))   // Material presets
+implementation(project(":navmotion-shared"))     // SharedNavElement
 ```
 
-```kotlin
-dependencies {
-    implementation("com.github.saadkhalidkhan:ComposeNavMotion:1.0.0")
-}
-```
-
-See [PUBLISHING.md](PUBLISHING.md) for release steps and CI setup.
-
-### Local module (development)
-
-```kotlin
-// settings.gradle.kts
-include(":nav-animation")
-
-// app/build.gradle.kts
-dependencies {
-    implementation(project(":nav-animation"))
-}
-```
+Apply the Kotlin Serialization plugin in your app module for type-safe routes.
 
 ---
 
-## Quick start
+## Basic usage
 
 ```kotlin
-import com.composenavmotion.NavAnimation
+import com.composenavmotion.AnimatedNavHost
 import com.composenavmotion.animatedComposable
+import com.composenavmotion.material.MaterialNavMotion
+import kotlinx.serialization.Serializable
 
-NavHost(navController, startDestination = "home") {
-    animatedComposable(
-        route = "details",
-        animation = NavAnimation.slideLeft(),
+@Serializable object Home
+@Serializable data class Details(val id: String)
+
+AnimatedNavHost(
+    navController = navController,
+    startDestination = Home,
+    defaultAnimation = MaterialNavMotion.sharedAxisX(),
+) {
+    animatedComposable<Home> {
+        HomeScreen()
+    }
+
+    animatedComposable<Details>(
+        animation = MaterialNavMotion.containerTransform(),
+    ) { entry ->
+        val details = entry.toRoute<Details>()
+        DetailsScreen(details.id)
+    }
+}
+```
+---
+
+## Type-safe routes
+
+Annotate routes with `@Serializable` and register them with reified `animatedComposable`:
+
+```kotlin
+@Serializable object Home
+@Serializable data class Details(val id: String)
+
+animatedComposable<Home> { HomeScreen() }
+
+animatedComposable<Details> { entry ->
+    val args = entry.toRoute<Details>()
+    DetailsScreen(args.id)
+}
+```
+
+Navigate with route instances:
+
+```kotlin
+navController.navigate(Details("item-42"))
+```
+
+---
+
+## Global default animation
+
+Set one animation for the entire host:
+
+```kotlin
+AnimatedNavHost(
+    navController = navController,
+    startDestination = Home,
+    defaultAnimation = MaterialNavMotion.sharedAxisX(),
+) {
+    animatedComposable<Home> { HomeScreen() }
+    animatedComposable<Settings> { SettingsScreen() } // inherits sharedAxisX
+}
+```
+
+---
+
+## Per-screen override
+
+Pass `animation` on a single destination to override the global default:
+
+```kotlin
+animatedComposable<Details>(
+    animation = MaterialNavMotion.containerTransform(),
+) { entry ->
+    DetailsScreen(entry.toRoute<Details>().id)
+}
+```
+
+**Resolution priority:** per-screen → nested graph → global default → `NavMotion.fade()`.
+
+---
+
+## Nested graphs
+
+```kotlin
+@Serializable object MainGraph
+@Serializable object NestedHome
+@Serializable data class NestedDetails(val id: String)
+
+AnimatedNavHost(navController, startDestination = Home) {
+    animatedNavigation<MainGraph>(
+        startDestination = NestedHome,
+        animation = MaterialNavMotion.sharedAxisY(),
     ) {
-        DetailsScreen()
+        animatedComposable<NestedHome> { NestedHomeScreen() }
+        animatedComposable<NestedDetails> { entry ->
+            NestedDetailsScreen(entry.toRoute<NestedDetails>().id)
+        }
     }
 }
 ```
 
----
-
-## Preset animations
-
-```kotlin
-NavAnimation.fade()
-NavAnimation.slideLeft()
-NavAnimation.slideRight()
-NavAnimation.slideUp()
-NavAnimation.scale()
-```
-
-Each preset returns a `NavAnimationSpec` with enter, exit, pop enter, and pop exit transitions.
-
----
-
-## Custom animations
-
-Transitions are built with lambdas on `AnimationConfig`, so duration and easing stay under library control via `tweenSpec()`.
-
-### Horizontal slide
-
-```kotlin
-NavAnimation.custom(
-    enter = { slideInHorizontally(animationSpec = tweenSpec()) },
-    exit = { slideOutHorizontally(animationSpec = tweenSpec()) },
-)
-```
-
-### Fade
-
-```kotlin
-NavAnimation.custom(
-    enter = { fadeIn(animationSpec = tweenSpec()) },
-    exit = { fadeOut(animationSpec = tweenSpec()) },
-)
-```
-
-### Mixed animation
-
-```kotlin
-NavAnimation.custom(
-    enter = { slideInVertically(animationSpec = tweenSpec()) },
-    exit = { fadeOut(animationSpec = tweenSpec()) },
-    popEnter = { fadeIn(animationSpec = tweenSpec()) },
-    popExit = { slideOutVertically(animationSpec = tweenSpec()) },
-    duration = 350,
-)
-```
-
----
-
-## Direction-aware navigation
-
-Use separate forward and backward specs. Compose Navigation applies `enter`/`exit` on push and `popEnter`/`popExit` on back — no stack-depth tracking required.
-
-```kotlin
-val navAnimation = NavAnimation.directionAware(
-    forward = NavAnimation.slideLeft(),
-    backward = NavAnimation.slideRight(),
-)
-
-NavHost(navController, startDestination = "home") {
-    animatedComposable(route = "home", animation = navAnimation) { HomeScreen() }
-    animatedComposable(route = "details", animation = navAnimation) { DetailsScreen() }
-    animatedComposable(route = "checkout", animation = navAnimation) { CheckoutScreen() }
-}
-```
-
-Works with presets and `NavAnimation.custom()`:
-
-```kotlin
-NavAnimation.directionAware(
-    forward = NavAnimation.custom(
-        enter = { fadeIn(animationSpec = tweenSpec()) },
-        exit = { fadeOut(animationSpec = tweenSpec()) },
-    ),
-    backward = NavAnimation.custom(
-        enter = { slideInHorizontally(animationSpec = tweenSpec()) },
-        exit = { slideOutHorizontally(animationSpec = tweenSpec()) },
-    ),
-)
-```
+Destinations inside the nested graph inherit the graph animation unless they override it.
 
 ---
 
 ## Material motion presets
 
-Production-quality navigation presets inspired by common Material motion patterns. Import from `com.composenavmotion.material.MaterialNavMotion`.
-
 ```kotlin
 import com.composenavmotion.material.MaterialNavMotion
-import com.composenavmotion.animatedComposable
 
-NavHost(navController, startDestination = "home") {
-    animatedComposable(
-        route = "details",
-        animation = MaterialNavMotion.sharedAxisX(),
-    ) {
-        DetailsScreen()
+MaterialNavMotion.sharedAxisX()
+MaterialNavMotion.sharedAxisY()
+MaterialNavMotion.fadeThrough()
+MaterialNavMotion.containerTransform()
+MaterialNavMotion.modal()
+```
+
+| Preset | Use case |
+| --- | --- |
+| `sharedAxisX()` | Lateral peer navigation |
+| `sharedAxisY()` | Vertical parent/child flows |
+| `fadeThrough()` | Unrelated destinations at the same level |
+| `containerTransform()` | Detail expansion style (scale + fade) |
+| `modal()` | Bottom sheet / modal presentation |
+
+---
+
+## Shared elements
+
+Wrap matching content on source and target screens with the same `key`:
+
+```kotlin
+import com.composenavmotion.shared.AnimatedNavHostWithSharedTransitions
+import com.composenavmotion.shared.SharedNavElement
+
+AnimatedNavHostWithSharedTransitions(
+    navController = navController,
+    startDestination = Home,
+) {
+    animatedComposable<ProfileList> {
+        SharedNavElement(key = "profile-image-$userId") {
+            ProfileAvatar(userId)
+        }
     }
-
-    animatedComposable(
-        route = "settings",
-        animation = MaterialNavMotion.sharedAxisY(),
-    ) {
-        SettingsScreen()
-    }
-
-    animatedComposable(
-        route = "search",
-        animation = MaterialNavMotion.fadeThrough(),
-    ) {
-        SearchScreen()
-    }
-
-    animatedComposable(
-        route = "album",
-        animation = MaterialNavMotion.containerTransform(),
-    ) {
-        AlbumScreen()
-    }
-
-    animatedComposable(
-        route = "modal",
-        animation = MaterialNavMotion.modal(),
-    ) {
-        ModalScreen()
+    animatedComposable<ProfileDetail> { entry ->
+        val id = entry.toRoute<ProfileDetail>().userId
+        SharedNavElement(key = "profile-image-$id") {
+            ProfileAvatar(id, large = true)
+        }
     }
 }
 ```
 
-Each preset accepts optional `duration` (default 300 ms) and `easing` (default `FastOutSlowInEasing`):
+Uses Compose **`ExperimentalSharedTransitionApi`** (`SharedTransitionLayout` + `Modifier.sharedElement`). When shared transitions are unavailable, `SharedNavElement` renders content without shared-element behavior.
+
+---
+
+## Accessibility
+
+### Disable all animations
 
 ```kotlin
-MaterialNavMotion.sharedAxisX(
-    duration = 400,
-    easing = LinearOutSlowInEasing,
-)
+AnimatedNavHost(
+    navController = navController,
+    startDestination = Home,
+    animationsEnabled = false,
+) { /* ... */ }
 ```
 
-| Preset | Use case | Forward behavior | Back behavior |
-| --- | --- | --- | --- |
-| `sharedAxisX()` | Lateral peer navigation | Slide in from right + fade in | Slide in from left + fade in |
-| `sharedAxisY()` | Vertical parent/child flows | Slide in from bottom + fade in | Slide in from top + fade in |
-| `fadeThrough()` | Unrelated destinations | Fade out quickly, fade in with delay + subtle scale | Same pattern |
-| `containerTransform()` | Detail expansion style | Scale up + fade in / scale down + fade out | Same pattern |
-| `modal()` | Bottom sheet / modal | Slide up from bottom + fade in | Slide down + fade out |
+Or with full config:
 
-> **Note:** `containerTransform()` is a simplified **container transform style** transition (scale + fade). It is not a true Material container transform, which typically requires shared element / shared bounds support.
+```kotlin
+AnimatedNavHost(
+    navController = navController,
+    startDestination = Home,
+    config = NavMotionConfig(
+        animationsEnabled = true,
+        respectSystemAnimatorScale = true,
+        defaultDuration = 300,
+    ),
+) { /* ... */ }
+```
+
+When animations are disabled, all destinations use `NavMotion.none()` (`EnterTransition.None` / `ExitTransition.None`).
+
+`respectSystemAnimatorScale` disables transitions when the system **Animator duration scale** is `0` (Remove animations accessibility setting).
 
 ---
 
 ## Sample app
 
 ```bash
-./gradlew :app:installDebug
+./gradlew :navmotion-sample:installDebug
 ```
 
-Demonstrates preset transitions, direction-aware checkout flow, a custom profile screen, a mixed slide-up / fade sheet screen, and all five Material motion presets. Open any **Material:** item on the home list to preview shared axis, fade through, container transform style, and modal transitions.
+The sample demonstrates:
+
+- **Home** — hub for all demos
+- **List screen** — browse items with type-safe routes
+- **Details** — per-screen `containerTransform` override
+- **Profile** — classic custom slide preset
+- **Settings** & **Modal** — Material presets
+- **Sheet** — custom mixed slide/fade
+- **Animation selector** — change global default at runtime
+- **Shared elements** — `SharedNavElement` profile avatars
+- **Nested graph** — `animatedNavigation<MainGraph>`
+- **Direction-aware checkout** — `NavMotion.directionAware()`
+- **MVP 1–4 compatibility** — `NavAnimation` string-route API
 
 ---
 
@@ -291,22 +288,46 @@ Demonstrates preset transitions, direction-aware checkout flow, a custom profile
 
 | Module | Description |
 | --- | --- |
-| `:nav-animation` | Android library (minSdk 26) |
-| `:app` | Demo application |
+| `:navmotion-core` | `AnimatedNavHost`, `NavMotion`, type-safe routes, config |
+| `:navmotion-material` | `MaterialNavMotion` presets |
+| `:navmotion-shared` | `SharedNavElement`, `AnimatedNavHostWithSharedTransitions` |
+| `:nav-animation` | Published aggregator (Maven Central) |
+| `:navmotion-sample` | Demo application |
+
+### Backward compatibility (MVP 1–4)
+
+The original API remains available:
+
+```kotlin
+import com.composenavmotion.NavAnimation
+import com.composenavmotion.animatedComposable
+
+NavHost(navController, startDestination = "home") {
+    animatedComposable(route = "details", animation = NavAnimation.slideLeft()) {
+        DetailsScreen()
+    }
+}
+```
+
+`NavAnimation` and `NavAnimationSpec` are deprecated aliases for `NavMotion` and `NavMotionSpec`.
 
 ---
 
 ## Contributing
 
-Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening an issue or pull request.
+Run tests and assemble the sample before opening a PR:
 
-Run `./gradlew :nav-animation:testDebugUnitTest :app:assembleDebug` before opening a PR.
+```bash
+./gradlew :navmotion-core:testDebugUnitTest :navmotion-material:testDebugUnitTest :navmotion-shared:testDebugUnitTest :navmotion-sample:assembleDebug
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
 ## License
 
-This project is licensed under the **Apache License 2.0** — see [LICENSE](LICENSE).
+Apache License 2.0 — see [LICENSE](LICENSE).
 
 ```
 Copyright 2026 Saad Khan
@@ -315,5 +336,3 @@ Copyright 2026 Saad Khan
 ## Author
 
 **Saad Khan** — [GitHub](https://github.com/saadkhalidkhan) · ranasaad0799@gmail.com
-
-If this library helps you, consider starring the repo.
