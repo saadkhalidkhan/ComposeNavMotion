@@ -190,7 +190,7 @@ Refresh Gradle; confirm imports from `com.composenavmotion`.
 
 1. Bump `COMPOSE_NAV_MOTION_VERSION_NAME` + README version lines
 2. Merge to `master`
-3. `./gradlew :nav-animation:testDebugUnitTest :app:assembleDebug`
+3. `./gradlew :navmotion-core:testDebugUnitTest :navmotion-material:testDebugUnitTest :navmotion-shared:testDebugUnitTest :navmotion-sample:assembleDebug`
 4. Publish Maven Central (local **or** push tag for CI)
 5. Push same tag for JitPack → verify green on jitpack.io
 6. Optional: GitHub Release with changelog

@@ -18,6 +18,10 @@ jobs:
       - name: Grant execute permission for Gradle wrapper
         run: chmod +x gradlew
       - name: Run unit tests
-        run: ./gradlew :nav-animation:testDebugUnitTest --stacktrace
+        run: >
+          ./gradlew :navmotion-core:testDebugUnitTest
+          :navmotion-material:testDebugUnitTest
+          :navmotion-shared:testDebugUnitTest
+          --stacktrace
       - name: Assemble sample app
-        run: ./gradlew :app:assembleDebug --stacktrace
+        run: ./gradlew :navmotion-sample:assembleDebug --stacktrace
